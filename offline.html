@@ -41,14 +41,11 @@
       }
 
       .mark {
-        display: grid;
         width: 52px;
         height: 52px;
-        place-items: center;
-        border-radius: 8px;
-        background: var(--brand);
-        color: #fff;
-        font-weight: 850;
+        border: 2px solid rgba(39, 103, 73, 0.14);
+        border-radius: 999px;
+        object-fit: cover;
       }
 
       h1 {
@@ -66,7 +63,7 @@
   </head>
   <body>
     <main>
-      <div class="mark" aria-hidden="true">FF</div>
+      <img class="mark" src="icons/logo.png" alt="Fitora logo" />
       <h1>Fitora Fuels is offline</h1>
       <p>
         Open the app once while connected to finish saving it for offline use, then it will load

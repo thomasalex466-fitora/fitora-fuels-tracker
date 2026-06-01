@@ -75,15 +75,14 @@ button {
   gap: 12px;
 }
 
-.brand-mark {
-  display: grid;
+.brand-logo {
   width: 48px;
   height: 48px;
-  place-items: center;
-  border-radius: 8px;
-  background: var(--brand);
-  color: #fff;
-  font-weight: 800;
+  flex: 0 0 auto;
+  border: 2px solid rgba(39, 103, 73, 0.14);
+  border-radius: 999px;
+  background: #fff;
+  object-fit: cover;
 }
 
 .brand-block h1,

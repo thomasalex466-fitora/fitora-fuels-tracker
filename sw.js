@@ -1,4 +1,4 @@
-const CACHE_NAME = "fitora-fuels-pwa-v3";
+const CACHE_NAME = "fitora-fuels-pwa-v4";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -7,7 +7,7 @@ const CORE_ASSETS = [
   "./manifest.webmanifest",
   "./offline.html",
   "./favicon-32.png",
-  "./icons/icon.svg",
+  "./icons/logo.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/maskable-512.png",
