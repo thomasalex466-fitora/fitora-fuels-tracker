@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Track Fitora Fuels orders, expenses, revenue, pending value, and profit."
+    />
+    <meta name="theme-color" content="#276749" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Fitora Fuels" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="msapplication-TileColor" content="#276749" />
+    <title>Fitora Fuels Tracker</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">FF</div>
+          <div>
+            <h1>Fitora Fuels</h1>
+            <p>Orders & Expenses</p>
+          </div>
+        </div>
+
+        <nav class="tab-list" aria-label="Views">
+          <button class="tab-button active" type="button" data-tab="dashboard">Dashboard</button>
+          <button class="tab-button" type="button" data-tab="orders">Orders</button>
+          <button class="tab-button" type="button" data-tab="expenses">Expenses</button>
+          <button class="tab-button" type="button" data-tab="reports">Reports</button>
+        </nav>
+
+        <div class="storage-panel">
+          <div>
+            <span class="label">Saved locally</span>
+            <strong id="lastSaved">Not saved yet</strong>
+            <span class="app-status" id="appStatus">Checking offline mode</span>
+          </div>
+          <div class="storage-actions">
+            <button class="ghost-button compact hide" type="button" id="installBtn">Install</button>
+            <button class="ghost-button compact" type="button" id="backupBtn">Backup</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Operations desk</p>
+            <h2 id="viewTitle">Dashboard</h2>
+          </div>
+          <div class="topbar-actions">
+            <label class="period-control">
+              <span>Period</span>
+              <select id="periodFilter">
+                <option value="this-month">This month</option>
+                <option value="last-month">Last month</option>
+                <option value="quarter">This quarter</option>
+                <option value="year">This year</option>
+                <option value="all">All time</option>
+              </select>
+            </label>
+            <button class="primary-button" type="button" data-jump="orders">New order</button>
+            <button class="secondary-button" type="button" data-jump="expenses">New expense</button>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboardView" data-view="dashboard">
+          <div class="metric-grid" aria-label="Summary totals">
+            <article class="metric">
+              <span>Revenue</span>
+              <strong id="revenueMetric">INR 0</strong>
+              <small id="orderCountMetric">0 orders</small>
+            </article>
+            <article class="metric">
+              <span>Expenses</span>
+              <strong id="expenseMetric">INR 0</strong>
+              <small id="expenseCountMetric">0 entries</small>
+            </article>
+            <article class="metric">
+              <span>Net profit</span>
+              <strong id="profitMetric">INR 0</strong>
+              <small id="marginMetric">0% margin</small>
+            </article>
+            <article class="metric alert">
+              <span>Pending value</span>
+              <strong id="pendingMetric">INR 0</strong>
+              <small id="pendingCountMetric">0 pending</small>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <h3>Order Status</h3>
+                <span id="statusTotal" class="muted"></span>
+              </div>
+              <div class="status-list" id="statusList"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h3>Expense Mix</h3>
+                <span id="expenseMixTotal" class="muted"></span>
+              </div>
+              <div class="category-list" id="categoryList"></div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h3>Recent Activity</h3>
+              <span class="muted" id="recentCount"></span>
+            </div>
+            <div class="activity-list" id="activityList"></div>
+          </section>
+        </section>
+
+        <section class="view" id="ordersView" data-view="orders">
+          <div class="workspace-grid">
+            <form class="entry-form" id="orderForm" autocomplete="off">
+              <div class="form-heading">
+                <h3 id="orderFormTitle">Add order</h3>
+                <button class="ghost-button compact hide" type="button" id="cancelOrderEdit">Cancel edit</button>
+              </div>
+              <input type="hidden" id="orderId" />
+
+              <div class="field-grid">
+                <label>
+                  <span>Order date</span>
+                  <input id="orderDate" type="date" required />
+                </label>
+                <label>
+                  <span>Order no.</span>
+                  <input id="orderNumber" type="text" placeholder="FF-1001" required />
+                </label>
+                <label class="span-2">
+                  <span>Customer</span>
+                  <input id="customerName" type="text" placeholder="Customer or company name" required />
+                </label>
+                <label>
+                  <span>Contact</span>
+                  <input id="customerContact" type="tel" placeholder="Phone or email" />
+                </label>
+                <label>
+                  <span>Menu item</span>
+                  <select id="productName" required>
+                    <option value="">Select menu item</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Quantity</span>
+                  <input id="orderQuantity" type="number" min="0" step="0.01" inputmode="decimal" required />
+                </label>
+                <label>
+                  <span>Unit</span>
+                  <select id="orderUnit">
+                    <option value="item">item</option>
+                    <option value="L">L</option>
+                    <option value="kg">kg</option>
+                    <option value="pcs">pcs</option>
+                    <option value="job">job</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Rate</span>
+                  <input id="orderRate" type="number" min="0" step="0.01" inputmode="decimal" required />
+                </label>
+                <label class="span-2 hide" id="customProductWrap">
+                  <span>Custom item</span>
+                  <input id="customProductName" type="text" placeholder="Item name" />
+                </label>
+                <label>
+                  <span>Delivery fee</span>
+                  <input id="deliveryFee" type="number" min="0" step="0.01" inputmode="decimal" value="0" />
+                </label>
+                <label>
+                  <span>Status</span>
+                  <select id="orderStatus">
+                    <option value="New">New</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Payment</span>
+                  <select id="orderPayment">
+                    <option value="Unpaid">Unpaid</option>
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Bank transfer">Bank transfer</option>
+                    <option value="Card">Card</option>
+                    <option value="Credit">Credit</option>
+                  </select>
+                </label>
+                <label class="span-2">
+                  <span>Notes</span>
+                  <textarea id="orderNotes" rows="3" placeholder="Delivery location, driver, invoice note"></textarea>
+                </label>
+              </div>
+
+              <div class="form-footer">
+                <p id="orderPreview">Total: INR 0</p>
+                <button class="primary-button" type="submit" id="saveOrderBtn">Save order</button>
+              </div>
+            </form>
+
+            <section class="panel table-panel">
+              <div class="panel-header stacked">
+                <div>
+                  <h3>Orders</h3>
+                  <span class="muted" id="orderTableCount"></span>
+                </div>
+                <div class="table-actions">
+                  <input id="orderSearch" class="search-input" type="search" placeholder="Search orders" />
+                  <select id="statusFilter" aria-label="Order status">
+                    <option value="all">All status</option>
+                    <option value="New">New</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Product</th>
+                      <th>Status</th>
+                      <th class="number-cell">Total</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ordersTable"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="expensesView" data-view="expenses">
+          <div class="workspace-grid">
+            <form class="entry-form" id="expenseForm" autocomplete="off">
+              <div class="form-heading">
+                <h3 id="expenseFormTitle">Add expense</h3>
+                <button class="ghost-button compact hide" type="button" id="cancelExpenseEdit">Cancel edit</button>
+              </div>
+              <input type="hidden" id="expenseId" />
+
+              <div class="field-grid">
+                <label>
+                  <span>Date</span>
+                  <input id="expenseDate" type="date" required />
+                </label>
+                <label>
+                  <span>Category</span>
+                  <select id="expenseCategory" required>
+                    <option value="Fuel purchase">Fuel purchase</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Salary">Salary</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Rent">Rent</option>
+                    <option value="Tax">Tax</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </label>
+                <label class="span-2">
+                  <span>Vendor or payee</span>
+                  <input id="expenseVendor" type="text" placeholder="Vendor, staff, agency" required />
+                </label>
+                <label>
+                  <span>Amount</span>
+                  <input id="expenseAmount" type="number" min="0" step="0.01" inputmode="decimal" required />
+                </label>
+                <label>
+                  <span>Paid by</span>
+                  <select id="expenseMethod">
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Bank transfer">Bank transfer</option>
+                    <option value="Card">Card</option>
+                    <option value="Credit">Credit</option>
+                  </select>
+                </label>
+                <label class="span-2">
+                  <span>Notes</span>
+                  <textarea id="expenseNotes" rows="3" placeholder="Receipt, tank, vehicle, staff note"></textarea>
+                </label>
+              </div>
+
+              <div class="form-footer">
+                <p id="expensePreview">Amount: INR 0</p>
+                <button class="primary-button" type="submit" id="saveExpenseBtn">Save expense</button>
+              </div>
+            </form>
+
+            <section class="panel table-panel">
+              <div class="panel-header stacked">
+                <div>
+                  <h3>Expenses</h3>
+                  <span class="muted" id="expenseTableCount"></span>
+                </div>
+                <div class="table-actions">
+                  <input id="expenseSearch" class="search-input" type="search" placeholder="Search expenses" />
+                  <select id="categoryFilter" aria-label="Expense category">
+                    <option value="all">All categories</option>
+                    <option value="Fuel purchase">Fuel purchase</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Salary">Salary</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Rent">Rent</option>
+                    <option value="Tax">Tax</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Category</th>
+                      <th>Vendor</th>
+                      <th>Paid by</th>
+                      <th class="number-cell">Amount</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expensesTable"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="reportsView" data-view="reports">
+          <div class="report-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <h3>Monthly Summary</h3>
+                <button class="ghost-button compact" type="button" id="printBtn">Print</button>
+              </div>
+              <div class="report-card">
+                <div>
+                  <span>Revenue</span>
+                  <strong id="reportRevenue">INR 0</strong>
+                </div>
+                <div>
+                  <span>Expenses</span>
+                  <strong id="reportExpenses">INR 0</strong>
+                </div>
+                <div>
+                  <span>Net</span>
+                  <strong id="reportNet">INR 0</strong>
+                </div>
+              </div>
+              <div class="report-bars" id="reportBars"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h3>Data</h3>
+                <span class="muted" id="dataTotals"></span>
+              </div>
+              <div class="data-actions">
+                <button class="secondary-button" type="button" id="exportOrdersBtn">Export orders CSV</button>
+                <button class="secondary-button" type="button" id="exportExpensesBtn">Export expenses CSV</button>
+                <label class="file-button">
+                  Import backup
+                  <input id="importInput" type="file" accept="application/json" />
+                </label>
+                <button class="danger-button" type="button" id="clearBtn">Clear all data</button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

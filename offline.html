@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#276749" />
+    <title>Fitora Fuels Offline</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --brand: #276749;
+        --ink: #1b1d17;
+        --muted: #66705d;
+        --line: #dfe4d6;
+        --bg: #f7f8f2;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        place-items: center;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        padding: 24px;
+      }
+
+      main {
+        width: min(420px, 100%);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 24px;
+      }
+
+      .mark {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--brand);
+        color: #fff;
+        font-weight: 850;
+      }
+
+      h1 {
+        margin: 18px 0 8px;
+        font-size: 1.45rem;
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="mark" aria-hidden="true">FF</div>
+      <h1>Fitora Fuels is offline</h1>
+      <p>
+        Open the app once while connected to finish saving it for offline use, then it will load
+        from your phone even without a network.
+      </p>
+    </main>
+  </body>
+</html>
