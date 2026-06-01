@@ -221,7 +221,7 @@ function wireNavigation() {
     button.addEventListener("click", () => {
       const target = button.dataset.jump;
       showView(target, true);
-      if (target === "orders") $("#customerName").focus();
+      if (target === "orders") $("#productName").focus();
       if (target === "expenses") $("#expenseVendor").focus();
     });
   });
@@ -359,10 +359,6 @@ function populateMenuOptions() {
     productSelect.appendChild(optgroup);
   });
 
-  const customOption = document.createElement("option");
-  customOption.value = CUSTOM_PRODUCT_VALUE;
-  customOption.textContent = "Custom item";
-  productSelect.appendChild(customOption);
 }
 
 function suggestNextOrderNumber() {
@@ -381,8 +377,7 @@ function suggestNextOrderNumber() {
 function handleOrderSubmit(event) {
   event.preventDefault();
   const selectedMenuItem = getSelectedMenuItem();
-  const isCustomItem = $("#productName").value === CUSTOM_PRODUCT_VALUE;
-  const customProduct = $("#customProductName").value.trim();
+  ensureOrderDefaults();
 
   const order = {
     id: $("#orderId").value || createId(),
@@ -390,18 +385,18 @@ function handleOrderSubmit(event) {
     orderNumber: $("#orderNumber").value.trim(),
     customer: $("#customerName").value.trim(),
     contact: $("#customerContact").value.trim(),
-    product: isCustomItem ? customProduct || "Custom item" : $("#productName").value,
-    productCategory: selectedMenuItem?.category || (isCustomItem ? "Custom item" : ""),
+    product: $("#productName").value,
+    productCategory: selectedMenuItem?.category || "",
     quantity: toNumber($("#orderQuantity").value),
     unit: $("#orderUnit").value,
     rate: toNumber($("#orderRate").value),
     deliveryFee: toNumber($("#deliveryFee").value),
-    status: $("#orderStatus").value,
+    status: statusFromPayment($("#orderPayment").value),
     payment: $("#orderPayment").value,
     notes: $("#orderNotes").value.trim(),
   };
 
-  if (!order.date || !order.orderNumber || !order.customer) return;
+  if (!order.date || !order.orderNumber || !order.customer || !order.product) return;
 
   const existingIndex = state.orders.findIndex((item) => item.id === order.id);
   if (existingIndex >= 0) {
@@ -450,10 +445,12 @@ function resetOrderForm() {
   $("#orderFormTitle").textContent = "Add order";
   $("#saveOrderBtn").textContent = "Save order";
   $("#cancelOrderEdit").classList.add("hide");
-  $("#customProductWrap").classList.add("hide");
-  $("#customProductName").value = "";
   $("#orderUnit").value = "item";
   $("#deliveryFee").value = "0";
+  $("#orderStatus").value = "New";
+  $("#customerName").value = "Walk-in";
+  $("#customerContact").value = "";
+  $("#orderNotes").value = "";
   setDefaultDates();
   suggestNextOrderNumber();
   updateOrderPreview();
@@ -491,7 +488,7 @@ function editOrder(id) {
   $("#cancelOrderEdit").classList.remove("hide");
   updateOrderPreview();
   showView("orders");
-  $("#customerName").focus();
+  $("#productName").focus();
 }
 
 function editExpense(id) {
@@ -532,15 +529,7 @@ function deleteExpense(id) {
 }
 
 function handleMenuItemChange() {
-  const selectedValue = $("#productName").value;
   const selectedMenuItem = getSelectedMenuItem();
-
-  $("#customProductWrap").classList.toggle("hide", selectedValue !== CUSTOM_PRODUCT_VALUE);
-
-  if (selectedValue === CUSTOM_PRODUCT_VALUE) {
-    $("#customProductName").focus();
-    return;
-  }
 
   if (selectedMenuItem) {
     $("#orderRate").value = selectedMenuItem.price;
@@ -565,14 +554,29 @@ function selectProductForEdit(order) {
 
   if (existingOption) {
     productSelect.value = order.product;
-    $("#customProductWrap").classList.add("hide");
-    $("#customProductName").value = "";
     return;
   }
 
-  productSelect.value = CUSTOM_PRODUCT_VALUE;
-  $("#customProductWrap").classList.remove("hide");
-  $("#customProductName").value = order.product || "";
+  productSelect.value = "";
+}
+
+function ensureOrderDefaults() {
+  if (!$("#orderDate").value) {
+    $("#orderDate").value = toDateInput(new Date());
+  }
+  if (!$("#orderNumber").value) {
+    suggestNextOrderNumber();
+  }
+  $("#customerName").value = $("#customerName").value || "Walk-in";
+  $("#orderUnit").value = "item";
+  $("#deliveryFee").value = $("#deliveryFee").value || "0";
+}
+
+function statusFromPayment(payment) {
+  if (["Cash", "UPI", "Bank transfer", "Card"].includes(payment)) {
+    return "Paid";
+  }
+  return "New";
 }
 
 function updateOrderPreview() {
@@ -749,15 +753,14 @@ function renderOrdersTable() {
   }
 
   $("#ordersTable").innerHTML = orders.map((order) => `
-    <tr>
-      <td>${formatDate(order.date)}</td>
+      <tr>
+        <td>${formatDate(order.date)}</td>
       <td><strong>${escapeHtml(order.orderNumber)}</strong></td>
       <td>
-        ${escapeHtml(order.customer)}
-        ${order.contact ? `<br><span class="muted">${escapeHtml(order.contact)}</span>` : ""}
+        ${escapeHtml(order.product)}${order.productCategory ? `<br><span class="muted">${escapeHtml(order.productCategory)}</span>` : ""}
       </td>
-      <td>${escapeHtml(order.product)}${order.productCategory ? `<br><span class="muted">${escapeHtml(order.productCategory)}</span>` : ""}<br><span class="muted">${formatQuantity(order.quantity)} ${escapeHtml(order.unit)} x ${formatMoney(order.rate)}</span></td>
-      <td><span class="pill ${statusClass(order.status)}">${escapeHtml(order.status)}</span></td>
+      <td>${formatQuantity(order.quantity)} ${escapeHtml(order.unit)}<br><span class="muted">x ${formatMoney(order.rate)}</span></td>
+      <td><span class="pill ${statusClass(order.status)}">${escapeHtml(order.payment || "Unpaid")}</span></td>
       <td class="number-cell"><strong>${formatMoney(orderTotal(order))}</strong></td>
       <td>
         <div class="row-actions">

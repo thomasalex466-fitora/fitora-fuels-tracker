@@ -133,24 +133,16 @@
                 <button class="ghost-button compact hide" type="button" id="cancelOrderEdit">Cancel edit</button>
               </div>
               <input type="hidden" id="orderId" />
+              <input type="hidden" id="orderDate" />
+              <input type="hidden" id="orderNumber" />
+              <input type="hidden" id="customerName" value="Walk-in" />
+              <input type="hidden" id="customerContact" />
+              <input type="hidden" id="orderUnit" value="item" />
+              <input type="hidden" id="deliveryFee" value="0" />
+              <input type="hidden" id="orderStatus" value="New" />
+              <input type="hidden" id="orderNotes" />
 
               <div class="field-grid">
-                <label>
-                  <span>Order date</span>
-                  <input id="orderDate" type="date" required />
-                </label>
-                <label>
-                  <span>Order no.</span>
-                  <input id="orderNumber" type="text" placeholder="FF-1001" required />
-                </label>
-                <label class="span-2">
-                  <span>Customer</span>
-                  <input id="customerName" type="text" placeholder="Customer or company name" required />
-                </label>
-                <label>
-                  <span>Contact</span>
-                  <input id="customerContact" type="tel" placeholder="Phone or email" />
-                </label>
                 <label>
                   <span>Menu item</span>
                   <select id="productName" required>
@@ -162,36 +154,8 @@
                   <input id="orderQuantity" type="number" min="0" step="0.01" inputmode="decimal" required />
                 </label>
                 <label>
-                  <span>Unit</span>
-                  <select id="orderUnit">
-                    <option value="item">item</option>
-                    <option value="L">L</option>
-                    <option value="kg">kg</option>
-                    <option value="pcs">pcs</option>
-                    <option value="job">job</option>
-                  </select>
-                </label>
-                <label>
                   <span>Rate</span>
                   <input id="orderRate" type="number" min="0" step="0.01" inputmode="decimal" required />
-                </label>
-                <label class="span-2 hide" id="customProductWrap">
-                  <span>Custom item</span>
-                  <input id="customProductName" type="text" placeholder="Item name" />
-                </label>
-                <label>
-                  <span>Delivery fee</span>
-                  <input id="deliveryFee" type="number" min="0" step="0.01" inputmode="decimal" value="0" />
-                </label>
-                <label>
-                  <span>Status</span>
-                  <select id="orderStatus">
-                    <option value="New">New</option>
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Paid">Paid</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
                 </label>
                 <label>
                   <span>Payment</span>
@@ -203,10 +167,6 @@
                     <option value="Card">Card</option>
                     <option value="Credit">Credit</option>
                   </select>
-                </label>
-                <label class="span-2">
-                  <span>Notes</span>
-                  <textarea id="orderNotes" rows="3" placeholder="Delivery location, driver, invoice note"></textarea>
                 </label>
               </div>
 
@@ -235,14 +195,14 @@
                 </div>
               </div>
               <div class="table-wrap">
-                <table>
+                <table class="orders-table">
                   <thead>
                     <tr>
                       <th>Date</th>
                       <th>Order</th>
-                      <th>Customer</th>
-                      <th>Product</th>
-                      <th>Status</th>
+                      <th>Menu item</th>
+                      <th>Qty</th>
+                      <th>Payment</th>
                       <th class="number-cell">Total</th>
                       <th>Actions</th>
                     </tr>

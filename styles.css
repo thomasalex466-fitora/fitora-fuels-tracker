@@ -561,6 +561,10 @@ table {
   border-collapse: collapse;
 }
 
+.orders-table {
+  min-width: 640px;
+}
+
 th,
 td {
   border-bottom: 1px solid var(--line);
